@@ -1,0 +1,2 @@
+# chipbot
+Discord bot template
