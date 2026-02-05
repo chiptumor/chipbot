@@ -1,7 +1,7 @@
 import * as Discord from "discord.js";
 import YAML from "yaml";
 import FileSystem from "node:fs/promises";
-import Path from "node:path";
+import { resolvePath } from "./util/resolve-path.ts";
 import type { Client } from "./types/client.ts";
 
 const client = <Client> new Discord.Client({
@@ -23,12 +23,12 @@ client.aliases = <Client["aliases"]> Object.fromEntries([
 
 (async () => {
     await FileSystem.readFile(
-        Path.resolve("./config/secret.yaml"), "utf8"
+        resolvePath("../config/secret.yaml"), "utf8"
     ).then(file => {
         client.secret = YAML.parse(file);
     });
 
-    const commandPath = Path.resolve("./dist/command/");
+    const commandPath = resolvePath("./commands/");
     FileSystem.readdir(commandPath, { recursive: true }).then(files =>
         files.filter(file => file.match(/command\.js$/)).forEach(file =>
             getImport(commandPath, file).then((
@@ -49,7 +49,7 @@ client.aliases = <Client["aliases"]> Object.fromEntries([
 })();
 
 async function getImport(dir: string, file: string) {
-    const path = Path.join(dir, file);
+    const path = resolvePath(dir, file);
     const url = new URL("file://" + path).href;
     // TODO: adjust url until as simple as possible
     return await import(url);
