@@ -2,7 +2,7 @@ import * as Discord from "discord.js";
 
 export interface Command {
     /** Data returned to Discord and applicable to the client. */
-    metadata: {
+    meta: {
         /** The main name of the command. */
         name: string;
     
