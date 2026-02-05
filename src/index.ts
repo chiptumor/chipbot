@@ -1,7 +1,7 @@
 import * as Discord from "discord.js";
 import YAML from "yaml";
-import * as FileSystem from "node:fs/promises";
-import * as Path from "node:path";
+import FileSystem from "node:fs/promises";
+import Path from "node:path";
 import type { Client } from "./types/client.ts";
 
 const client = <Client> new Discord.Client({
