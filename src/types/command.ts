@@ -23,7 +23,7 @@ export interface Command {
             [K in keyof CommandTypeInfo]?: {
                 /** String to use when fetching this command from the client. */
                 alias: string;
-                /** API/client data used when registering/executing command. */
+                /** API data used when registering command. */
                 data: Omit<CommandTypeInfo[K], "type">;
             };
         };
