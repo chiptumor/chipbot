@@ -6,4 +6,5 @@ export interface Client extends Discord.Client {
     aliases: {
         [K in keyof CommandTypeInfo]: Discord.Collection<string, string>;
     };
+    secret: any;
 }

@@ -1,4 +1,7 @@
 import * as Discord from "discord.js";
+import YAML from "yaml";
+import * as FileSystem from "node:fs/promises";
+import * as Path from "node:path";
 import type { Client } from "./types/client.ts";
 
 const client = <Client> new Discord.Client({
@@ -19,3 +22,7 @@ client.aliases = <Client["aliases"]> Object.fromEntries(
         "prefixed"
     ].map(i => [ i, new Discord.Collection() ])
 );
+
+FileSystem.readFile(Path.resolve("./secret.yaml"), "utf8").then(file => {
+    client.secret = YAML.parse(file);
+});
