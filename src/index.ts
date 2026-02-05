@@ -23,6 +23,8 @@ client.aliases = <Client["aliases"]> Object.fromEntries(
     ].map(i => [ i, new Discord.Collection() ])
 );
 
-FileSystem.readFile(Path.resolve("./secret.yaml"), "utf8").then(file => {
+FileSystem.readFile(Path.resolve("./config/secret.yaml"), "utf8").then(file => {
     client.secret = YAML.parse(file);
+
+    console.log(client.secret);
 });
