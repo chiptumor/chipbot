@@ -1,7 +1,7 @@
 import * as Discord from "discord.js";
 import YAML from "yaml";
 import FileSystem from "node:fs/promises";
-import { resolvePath } from "./util/resolve-path.ts";
+import { resolvePath } from "./util/functions/resolve-path.ts";
 import type { Client } from "./types/client.ts";
 
 const client = <Client> new Discord.Client({
@@ -30,7 +30,7 @@ client.aliases = <Client["aliases"]> Object.fromEntries([
 
     const commandPath = resolvePath("./commands/");
     FileSystem.readdir(commandPath, { recursive: true }).then(files =>
-        files.filter(file => file.match(/command\.js$/)).forEach(file =>
+        files.filter(file => file.match(/index\.js$/)).forEach(file =>
             getImport(commandPath, file).then((
                 command: Client['commands'] extends
                     Discord.Collection<string, infer T> ? T : never

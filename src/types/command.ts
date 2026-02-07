@@ -1,56 +1,129 @@
 import * as Discord from "discord.js";
+import {
+    InteractionType as I,
+    ApplicationCommandType as A,
+    ComponentType as C
+} from "discord.js";
+
+type CommandReturn = void | Promise<void>;
 
 export interface Command {
     /** Data returned to Discord and applicable to the client. */
-    meta: {
+    config: {
         /** The main name of the command. */
         name: string;
     
         /**
-         * Guild ids to restrict this command to.  
+         * Guild ids or keys under `secret.discord.server` to restrict this
+         * command to.  
          * If nullish, this command is not restricted.
          */
-        guilds?: Discord.Snowflake[] | null;
+        guilds?: (string | Discord.Snowflake)[] | null;
         /**
-         * Whether to restrict this command to admins, or the users to restrict this
-         * command to.  
+         * Whether to restrict this command to admins, or the users to restrict
+         * this command to.  
          * If nullish, this command is public.
          */
-        admins?: true | Discord.Snowflake[] | null;
-    
-        /** Applicable types to this command and their data. */
-        types: {
-            [K in keyof CommandTypeInfo]?: {
+        admins?: true | (string | Discord.Snowflake)[] | null;
+    };
+
+    /** Interaction types to apply to this command. */
+    interactionType: {
+        [I.Ping]?: unknown;
+
+        [I.ApplicationCommand]?: {
+            [A in keyof InteractionInfo[I.ApplicationCommand]]?: {
                 /** String to use when fetching this command from the client. */
                 alias: string;
                 /** API data used when registering command. */
-                data: Omit<CommandTypeInfo[K], "type">;
+                data: Omit<InteractionInfo[I.ApplicationCommand][A]["cfg"], "type">;
+                /** Function to execute. */
+                execute: (i: InteractionInfo[I.ApplicationCommand][A]["int"]) => CommandReturn;
+            };
+        };
+
+        // /^(.+?):(.+?)(?:(?<=\?)(.+))?$/
+        [I.MessageComponent]?: {
+            [C in keyof InteractionInfo[I.MessageComponent]]?: {
+                [K: string]: {
+                    /** String to use when fetching this command from the client. */
+                    alias: string;
+                    /** Function to execute. */
+                    execute?: (i: InteractionInfo[I.MessageComponent][C]["int"], args: string[]) => CommandReturn;
+                    /** Nested aliases. */
+                    children?: NonNullable<Command["interactionType"][I.MessageComponent]>[C];
+                };
+            };
+        };
+
+        [I.ModalSubmit]: {
+            [C in keyof InteractionInfo[I.MessageComponent]]?: {
+                [K: string]: {
+                    /** String to use when fetching this command from the client. */
+                    alias: string;
+                    /** Function to execute. */
+                    execute?: (i: InteractionInfo[I.MessageComponent][C]["int"], args: string[]) => CommandReturn;
+                    /** Nested aliases. */
+                    children?: NonNullable<Command["interactionType"][I.ModalSubmit]>[C];
+                };
             };
         };
     };
-    /** Functions to handle interactions. */
-    methods: Record<string, () => void>;
+    
+    events: {
+        [Discord.Events.MessageCreate]: {
+            execute?: (i: EventInfo[Discord.Events.MessageCreate]["int"]) => CommandReturn;
+        };
+    };
 }
 
-const CommandType = Discord.ApplicationCommandType;
+export interface InteractionInfo {
+    [I.Ping]: unknown;
+    [I.ApplicationCommand]: {
+        [A.ChatInput]: {
+            cfg: Discord.ChatInputApplicationCommandData;
+            int: Discord.ChatInputCommandInteraction;
+        };
+        [A.User]: {
+            cfg: Discord.UserApplicationCommandData;
+            int: Discord.UserContextMenuCommandInteraction;
+        };
+        [A.Message]: {
+            cfg: Discord.MessageApplicationCommandData;
+            int: Discord.MessageContextMenuCommandInteraction;
+        };
+        [A.PrimaryEntryPoint]: {
+            cfg: Discord.PrimaryEntryPointCommandData;
+            int: Discord.PrimaryEntryPointCommandInteraction;
+        };
+    };
+    [I.MessageComponent]: {
+        [C.Button]:
+            { int: Discord.ButtonInteraction; };
+        [C.StringSelect]:
+            { int: Discord.StringSelectMenuInteraction; };
+        [C.UserSelect]:
+            { int: Discord.UserSelectMenuInteraction; };
+        [C.RoleSelect]:
+            { int: Discord.RoleSelectMenuInteraction; };
+        [C.MentionableSelect]:
+            { int: Discord.MentionableSelectMenuInteraction; };
+        [C.ChannelSelect]:
+            { int: Discord.ChannelSelectMenuInteraction; };
+    };
+    [I.ApplicationCommandAutocomplete]:
+        { int: Discord.AutocompleteInteraction; };
+    [I.ModalSubmit]:
+        { int: Discord.ModalSubmitInteraction; };
+}
 
-export interface CommandTypeInfo {
-    /** {@inheritDoc Discord.ApplicationCommandType.ChatInput} */
-    [CommandType.ChatInput        ]: Discord.ChatInputApplicationCommandData;
-    /** {@inheritDoc Discord.ApplicationCommandType.User} */
-    [CommandType.User             ]: Discord.     UserApplicationCommandData;
-    /** {@inheritDoc Discord.ApplicationCommandType.Message} */
-    [CommandType.Message          ]: Discord.  MessageApplicationCommandData;
-    /** {@inheritDoc Discord.ApplicationCommandType.PrimaryEntryPoint} */
-    [CommandType.PrimaryEntryPoint]: Discord.   PrimaryEntryPointCommandData;
-    /** A message calling a command by matching a prefix. */
-    prefixed: {
-        /**
-         * A string or list of strings to override the default prefix with.  
-         * If nullish, the default prefix is used.
-         */
-        prefix?: string | string[] | null;
-        /** A string or list of strings to use to execute this command. */
-        name: string | string[];
+export interface EventInfo {
+    [Discord.Events.MessageCreate]: {
+        /** A message calling a command by matching a prefix. */
+        cfg: {
+            /** A string or list of strings to use to execute this command. */
+            name: string | string[];
+        };
+        int: Discord.Message;
     };
 }
