@@ -57,15 +57,13 @@ export interface Command {
         };
 
         [I.ModalSubmit]: {
-            [C in keyof InteractionInfo[I.MessageComponent]]?: {
-                [K: string]: {
-                    /** String to use when fetching this command from the client. */
-                    alias: string;
-                    /** Function to execute. */
-                    execute?: (i: InteractionInfo[I.MessageComponent][C]["int"], args: string[]) => CommandReturn;
-                    /** Nested aliases. */
-                    children?: NonNullable<Command["interactionType"][I.ModalSubmit]>[C];
-                };
+            [K: string]: {
+                /** String to use when fetching this command from the client. */
+                alias: string;
+                /** Function to execute. */
+                execute?: (i: InteractionInfo[I.ModalSubmit]["int"], args: string[]) => CommandReturn;
+                /** Nested aliases. */
+                children?: NonNullable<Command["interactionType"][I.ModalSubmit]>;
             };
         };
     };
