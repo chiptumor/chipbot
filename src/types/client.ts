@@ -1,10 +1,27 @@
 import * as Discord from "discord.js";
-import type { Command, CommandTypeInfo } from "./command.ts";
 
 export interface Client extends Discord.Client {
-    commands: Discord.Collection<string, Command>;
     aliases: {
-        [K in keyof CommandTypeInfo]: Discord.Collection<string, string>;
+        interaction: {
+            [Discord.InteractionType.ApplicationCommand]: {
+                [K in Discord.ApplicationCommandType]: Discord.Collection<string, string>;
+            };
+            [Discord.InteractionType.MessageComponent]: {};
+        };
+        // [K in keyof InteractionTypeInfo]: Discord.Collection<string, string>;
     };
-    secret: any;
+    secret: { [K: string]: any; } & {
+        discord: {
+            token: string;
+            client: Discord.Snowflake;
+            admin: { [K: string]: Discord.Snowflake; };
+            server: {
+                [K: string]: {
+                    id: Discord.Snowflake;
+                    channel: { [K: string]: Discord.Snowflake; };
+                };
+            };
+            user: { [K: string]: Discord.Snowflake; };
+        };
+    };
 }

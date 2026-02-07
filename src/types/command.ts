@@ -28,32 +28,38 @@ export interface Command {
     };
 
     /** Interaction types to apply to this command. */
-    interactionType: {
+    interaction: {
         [I.Ping]?: unknown;
 
         [I.ApplicationCommand]?: {
-            [A in keyof InteractionInfo[I.ApplicationCommand]]?: {
+            [A in keyof InteractionTypeInfo[I.ApplicationCommand]]?: {
                 /** String to use when fetching this command from the client. */
                 alias: string;
                 /** API data used when registering command. */
-                data: Omit<InteractionInfo[I.ApplicationCommand][A]["cfg"], "type">;
+                data: Omit<InteractionTypeInfo[I.ApplicationCommand][A]["cfg"], "type">;
                 /** Function to execute. */
-                execute: (i: InteractionInfo[I.ApplicationCommand][A]["int"]) => CommandReturn;
+                execute: (i: InteractionTypeInfo[I.ApplicationCommand][A]["int"]) => CommandReturn;
             };
         };
 
         // /^(.+?):(.+?)(?:(?<=\?)(.+))?$/
         [I.MessageComponent]?: {
-            [C in keyof InteractionInfo[I.MessageComponent]]?: {
+            [C in keyof InteractionTypeInfo[I.MessageComponent]]?: {
                 [K: string]: {
                     /** String to use when fetching this command from the client. */
                     alias: string;
                     /** Function to execute. */
-                    execute?: (i: InteractionInfo[I.MessageComponent][C]["int"], args: string[]) => CommandReturn;
+                    execute?: (i: InteractionTypeInfo[I.MessageComponent][C]["int"], args: string[]) => CommandReturn;
                     /** Nested aliases. */
-                    children?: NonNullable<Command["interactionType"][I.MessageComponent]>[C];
+                    children?: NonNullable<Command["interaction"][I.MessageComponent]>[C];
                 };
             };
+        };
+
+        [I.ApplicationCommandAutocomplete]?: {
+            [K: string]: {
+                execute?: (i: InteractionTypeInfo[I.ApplicationCommandAutocomplete]["int"], value: string) => CommandReturn;
+            }
         };
 
         [I.ModalSubmit]: {
@@ -61,21 +67,21 @@ export interface Command {
                 /** String to use when fetching this command from the client. */
                 alias: string;
                 /** Function to execute. */
-                execute?: (i: InteractionInfo[I.ModalSubmit]["int"], args: string[]) => CommandReturn;
+                execute?: (i: InteractionTypeInfo[I.ModalSubmit]["int"], args: string[]) => CommandReturn;
                 /** Nested aliases. */
-                children?: NonNullable<Command["interactionType"][I.ModalSubmit]>;
+                children?: NonNullable<Command["interaction"][I.ModalSubmit]>;
             };
         };
     };
     
-    events: {
+    event: {
         [Discord.Events.MessageCreate]: {
-            execute?: (i: EventInfo[Discord.Events.MessageCreate]["int"]) => CommandReturn;
+            execute?: (i: EventsInfo[Discord.Events.MessageCreate]["int"]) => CommandReturn;
         };
     };
 }
 
-export interface InteractionInfo {
+export interface InteractionTypeInfo {
     [I.Ping]: unknown;
     [I.ApplicationCommand]: {
         [A.ChatInput]: {
@@ -115,7 +121,7 @@ export interface InteractionInfo {
         { int: Discord.ModalSubmitInteraction; };
 }
 
-export interface EventInfo {
+export interface EventsInfo {
     [Discord.Events.MessageCreate]: {
         /** A message calling a command by matching a prefix. */
         cfg: {
