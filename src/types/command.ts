@@ -14,14 +14,14 @@ export interface Command {
         name: string;
     
         /**
-         * Guild ids or keys under `secret.discord.server` to restrict this
+         * Guild ids or keys under `secret.bot.server` to restrict this
          * command to.  
          * If nullish, this command is not restricted.
          */
         guilds?: (string | Discord.Snowflake)[] | null;
         /**
          * Whether to restrict this command to admins, or the users to restrict
-         * this command to.  
+         * this command to, by id or keys under `secret.bot.admin`.  
          * If nullish, this command is public.
          */
         admins?: true | (string | Discord.Snowflake)[] | null;
