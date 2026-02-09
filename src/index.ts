@@ -44,11 +44,7 @@ let collectionsFromKeys = (...keys: (keyof any)[]) =>
     Object.fromEntries(keys.map(i => [ i, new Discord.Collection() ]));
 
 (async () => {
-    await FileSystem.readFile(
-        resolvePath("../config/secret.yaml"), "utf8"
-    ).then(file => {
-        client.secret = YAML.parse(file);
-    });
+    client.secret = await getImport(resolvePath("config"), "secret.js");
 
     const commandPath = resolvePath("./commands/");
     FileSystem.readdir(commandPath, { recursive: true }).then(files =>
