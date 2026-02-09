@@ -126,3 +126,22 @@ export interface EventsInfo {
         int: Discord.Message;
     };
 }
+
+export interface ClientAliases {
+    interaction: {
+        [I.ApplicationCommand]: {
+            [K in InteractionTypeInfo[I.ApplicationCommand]]:
+                Discord.Collection<string, string>;
+        };
+        [I.MessageComponent]: {
+            [K in InteractionTypeInfo[I.MessageComponent]]:
+                Discord.Collection<string, string>;
+        };
+        [I.ModalSubmit]:
+            Discord.Collection<string, string>;
+    };
+    event: {
+        [Discord.Events.MessageCreate]:
+            Discord.Collection<string, string>;
+    };
+}
