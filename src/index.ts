@@ -13,13 +13,35 @@ const client = <Client> new Discord.Client({
 });
 
 client.commands = new Discord.Collection();
-client.aliases = <Client["aliases"]> Object.fromEntries([
-    Discord.ApplicationCommandType.ChatInput,
-    Discord.ApplicationCommandType.User,
-    Discord.ApplicationCommandType.Message,
-    Discord.ApplicationCommandType.PrimaryEntryPoint,
-    "prefixed"
-].map(i => [ i, new Discord.Collection() ]));
+client.aliases = <Client["aliases"]> {
+    interaction: {
+        [Discord.InteractionType.ApplicationCommand]:
+            CollectionFromKeys(
+                Discord.ApplicationCommandType.ChatInput,
+                Discord.ApplicationCommandType.User,
+                Discord.ApplicationCommandType.Message,
+                Discord.ApplicationCommandType.PrimaryEntryPoint
+            ),
+        [Discord.InteractionType.MessageComponent]:
+            CollectionFromKeys(
+                Discord.ComponentType.Button,
+                Discord.ComponentType.StringSelect,
+                Discord.ComponentType.UserSelect,
+                Discord.ComponentType.RoleSelect,
+                Discord.ComponentType.MentionableSelect,
+                Discord.ComponentType.ChannelSelect
+            ),
+        [Discord.InteractionType.ModalSubmit]:
+            new Discord.Collection()
+    },
+    event: {
+        [Discord.Events.MessageCreate]:
+            new Discord.Collection()
+    }
+};
+
+let CollectionFromKeys = (...keys: (keyof any)[]) =>
+    Object.fromEntries(keys.map(i => [ i, new Discord.Collection() ]));
 
 (async () => {
     await FileSystem.readFile(
