@@ -16,14 +16,14 @@ client.commands = new Discord.Collection();
 client.aliases = <Client["aliases"]> {
     interaction: {
         [Discord.InteractionType.ApplicationCommand]:
-            CollectionFromKeys(
+            collectionsFromKeys(
                 Discord.ApplicationCommandType.ChatInput,
                 Discord.ApplicationCommandType.User,
                 Discord.ApplicationCommandType.Message,
                 Discord.ApplicationCommandType.PrimaryEntryPoint
             ),
         [Discord.InteractionType.MessageComponent]:
-            CollectionFromKeys(
+            collectionsFromKeys(
                 Discord.ComponentType.Button,
                 Discord.ComponentType.StringSelect,
                 Discord.ComponentType.UserSelect,
@@ -40,7 +40,7 @@ client.aliases = <Client["aliases"]> {
     }
 };
 
-let CollectionFromKeys = (...keys: (keyof any)[]) =>
+let collectionsFromKeys = (...keys: (keyof any)[]) =>
     Object.fromEntries(keys.map(i => [ i, new Discord.Collection() ]));
 
 (async () => {
