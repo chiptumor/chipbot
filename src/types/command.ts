@@ -29,8 +29,6 @@ export interface Command {
 
     /** Interaction types to apply to this command. */
     interaction: {
-        [I.Ping]?: unknown;
-
         [I.ApplicationCommand]?: {
             [A in keyof InteractionTypeInfo[I.ApplicationCommand]]?: {
                 /** API data used when registering command. */
@@ -80,7 +78,6 @@ export interface Command {
 }
 
 export interface InteractionTypeInfo {
-    [I.Ping]: unknown;
     [I.ApplicationCommand]: {
         [A.ChatInput]: {
             cfg: Discord.ChatInputApplicationCommandData;
