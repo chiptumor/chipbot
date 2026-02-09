@@ -33,8 +33,6 @@ export interface Command {
 
         [I.ApplicationCommand]?: {
             [A in keyof InteractionTypeInfo[I.ApplicationCommand]]?: {
-                /** String to use when fetching this command from the client. */
-                alias: string;
                 /** API data used when registering command. */
                 data: Omit<InteractionTypeInfo[I.ApplicationCommand][A]["cfg"], "type">;
                 /** Function to execute. */
