@@ -15,6 +15,9 @@ export interface Client extends Discord.Client {
             [Discord.InteractionType.ModalSubmit]:
                 Discord.Collection<string, string>;
         };
-        // [K in keyof InteractionTypeInfo]: Discord.Collection<string, string>;
+        event: {
+            [Discord.Events.MessageCreate]:
+                Discord.Collection<string, string>;
+        };
     };
 }
