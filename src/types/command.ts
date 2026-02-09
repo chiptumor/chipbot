@@ -59,7 +59,7 @@ export interface Command {
         [I.ApplicationCommandAutocomplete]?: {
             [K: string]: {
                 execute?: (i: InteractionTypeInfo[I.ApplicationCommandAutocomplete]["int"], value: string) => CommandReturn;
-            }
+            };
         };
 
         [I.ModalSubmit]: {
