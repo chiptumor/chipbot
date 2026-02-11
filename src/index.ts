@@ -58,25 +58,10 @@ client.aliases = <Client["aliases"]> {
 
                 client.aliases.interaction.component.set(command.config.componentAlias, name);
 
-                // interactions
-                Object.entries(i = command.interaction).forEach(([ key, value ]) => {
-                    switch (key) {
-                        case t = Discord.InteractionType.ApplicationCommand:
-                        Object.entries(value).forEach(([ a, value ]) =>
-                            client.aliases.interaction[t][a].set(i[t][a].data.name, name)
-                        ); break;
-                        case t = Discord.InteractionType.MessageComponent:
-                        Object.entries(value).forEach(([ c, value ]) =>
-                            Object.entries(value).forEach(([ key, value ]) => {
-
-                            })
-                        ); break;
-                    }
-                });
-                Object.entries(command.meta.types).forEach(
-                    ([ type, { alias }]) =>
-                    client.aliases[type as keyof Client["aliases"]]
-                        .set(alias, command.meta.name)
+                Object.entries(command.interaction[
+                    t = Discord.InteractionType.ApplicationCommand
+                ]).forEach(([ a, value ]) =>
+                    client.aliases.interaction[t][a].set(value.data.name, name)
                 );
             }
         }))
