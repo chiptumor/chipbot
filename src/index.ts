@@ -1,8 +1,17 @@
-import * as Discord from "discord.js";
-import YAML from "yaml";
 import FileSystem from "node:fs/promises";
-import { resolvePath } from "./util/functions/resolve-path.ts";
+import Path from "node:path";
+import Module from "node:module";
+import * as Discord from "discord.js";
 import type { Client } from "./types/client.ts";
+
+const require: (string) => any = Module.createRequire(import.meta.url);
+
+let resolvePath = (...path) => Path.resolve(import.meta.url, ...path);
+let getImport = async (...path) => require(resolvePath(...path));
+
+let collectionsFromKeys = (...keys: (keyof any)[]) =>
+    Object.fromEntries(keys.map(i => [ i, new Discord.Collection() ]));
+
 
 const client = <Client> new Discord.Client({
     intents: [
@@ -40,20 +49,21 @@ client.aliases = <Client["aliases"]> {
     }
 };
 
-let collectionsFromKeys = (...keys: (keyof any)[]) =>
-    Object.fromEntries(keys.map(i => [ i, new Discord.Collection() ]));
-
 (async () => {
-    client.secret = await getImport(resolvePath("config"), "secret.js");
+    client.secret = await getImport("./config/secret.js");
 
+    // read all files from ./commands/...
     const commandPath = resolvePath("./commands/");
     FileSystem.readdir(commandPath, { recursive: true }).then(files =>
-        files.filter(file => file.match(/index\.js$/)).forEach(file =>
+        // only get files named 'command.js'
+        files.filter(file => file.match(/command\.js$/)).forEach(file =>
             getImport(commandPath, file).then((
+                // T = type of values from Client.commands's Collection
                 command: Client['commands'] extends
                     Discord.Collection<string, infer T> ? T : never
             ) => {
                 if (command.meta) {
+                    // set command entry
                     client.commands.set(command.meta.name, command);
                     Object.entries(command.meta.types).forEach(
                         ([ type, { alias }]) =>
@@ -65,10 +75,3 @@ let collectionsFromKeys = (...keys: (keyof any)[]) =>
         )
     );
 })();
-
-async function getImport(dir: string, file: string) {
-    const path = resolvePath(dir, file);
-    const url = new URL("file://" + path).href;
-    // TODO: adjust url until as simple as possible
-    return await import(url);
-}
