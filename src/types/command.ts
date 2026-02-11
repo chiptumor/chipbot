@@ -80,6 +80,8 @@ export interface Command {
     };
 }
 
+// https://discord-api-types.dev/api/next/discord-api-types-v10#RESTPostAPIApplicationCommandsJSONBody
+
 export interface InteractionTypeInfo {
     [I.ApplicationCommand]: {
         [A.ChatInput]: {
