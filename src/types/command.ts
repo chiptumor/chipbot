@@ -10,7 +10,7 @@ type CommandReturn = void | Promise<void>;
 export interface Command {
     /** Data returned to Discord and applicable to the client. */
     config: {
-        /** The main name of the command. */
+        /** The main name of the command. Must be unique. */
         name: string;
 
         /** Whether this command is accessible at all. */
