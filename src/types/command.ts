@@ -12,6 +12,9 @@ export interface Command {
     config: {
         /** The main name of the command. */
         name: string;
+
+        /** Whether this command is accessible at all. */
+        enabled?: boolean;
     
         /**
          * Guild ids or keys under `secret.bot.server` to restrict this
