@@ -47,9 +47,7 @@ export interface Command {
         // /^(.+?):(.+?)(?:(?<=\?)(.+))?$/
         [I.MessageComponent]?: {
             [C in keyof InteractionTypeInfo[I.MessageComponent]]?: {
-                [K: string]: {
-                    /** String to use when fetching this command from the client. */
-                    alias: string;
+                [K: keyof any]: {
                     /** Function to execute. */
                     execute?: (i: InteractionTypeInfo[I.MessageComponent][C]["int"], args: string[]) => CommandReturn;
                     /** Nested aliases. */
@@ -66,8 +64,6 @@ export interface Command {
 
         [I.ModalSubmit]?: {
             [K: keyof any]: {
-                /** String to use when fetching this command from the client. */
-                alias: string;
                 /** Function to execute. */
                 execute?: (i: InteractionTypeInfo[I.ModalSubmit]["int"], args: string[]) => CommandReturn;
                 /** Nested aliases. */
