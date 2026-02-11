@@ -13,6 +13,9 @@ export interface Command {
         /** The main name of the command. Must be unique. */
         name: string;
 
+        /** The alias to use when fetching this command from component interactions. */
+        componentAlias: string;
+
         /** Whether this command is accessible at all. */
         enabled?: boolean;
     
