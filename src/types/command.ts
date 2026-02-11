@@ -83,19 +83,19 @@ export interface Command {
 export interface InteractionTypeInfo {
     [I.ApplicationCommand]: {
         [A.ChatInput]: {
-            cfg: Discord.ChatInputApplicationCommandData;
+            cfg: Discord.RESTPostAPIChatInputApplicationCommandsJSONBody;
             int: Discord.ChatInputCommandInteraction;
         };
         [A.User]: {
-            cfg: Discord.UserApplicationCommandData;
+            cfg: Discord.RESTPostAPIContextMenuApplicationCommandsJSONBody;
             int: Discord.UserContextMenuCommandInteraction;
         };
         [A.Message]: {
-            cfg: Discord.MessageApplicationCommandData;
+            cfg: Discord.RESTPostAPIContextMenuApplicationCommandsJSONBody;
             int: Discord.MessageContextMenuCommandInteraction;
         };
         [A.PrimaryEntryPoint]: {
-            cfg: Discord.PrimaryEntryPointCommandData;
+            cfg: Discord.RESTPostAPIPrimaryEntryPointApplicationCommandJSONBody;
             int: Discord.PrimaryEntryPointCommandInteraction;
         };
     };
