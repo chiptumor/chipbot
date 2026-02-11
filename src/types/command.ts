@@ -28,7 +28,7 @@ export interface Command {
     };
 
     /** Interaction types to apply to this command. */
-    interaction: {
+    interaction?: {
         [I.ApplicationCommand]?: {
             [A in keyof InteractionTypeInfo[I.ApplicationCommand]]?: {
                 /** API data used when registering command. */
@@ -58,7 +58,7 @@ export interface Command {
             };
         };
 
-        [I.ModalSubmit]: {
+        [I.ModalSubmit]?: {
             [K: string]: {
                 /** String to use when fetching this command from the client. */
                 alias: string;
@@ -70,8 +70,8 @@ export interface Command {
         };
     };
     
-    event: {
-        [Discord.Events.MessageCreate]: {
+    event?: {
+        [Discord.Events.MessageCreate]?: {
             execute?: (i: EventsInfo[Discord.Events.MessageCreate]["int"]) => CommandReturn;
         };
     };
