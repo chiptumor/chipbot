@@ -59,13 +59,13 @@ export interface Command {
         };
 
         [I.ApplicationCommandAutocomplete]?: {
-            [K: string]: {
+            [K: keyof any]: {
                 execute?: (i: InteractionTypeInfo[I.ApplicationCommandAutocomplete]["int"], value: string) => CommandReturn;
             };
         };
 
         [I.ModalSubmit]?: {
-            [K: string]: {
+            [K: keyof any]: {
                 /** String to use when fetching this command from the client. */
                 alias: string;
                 /** Function to execute. */
