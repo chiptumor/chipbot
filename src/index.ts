@@ -39,15 +39,19 @@ client.aliases = <Client["aliases"]> {
     }
 };
 
-(async () => {
-    client.secret = await getImport("./config/secret.js");
+const setupPromises = [];
 
+setupPromises.push((async () => {
+    client.secret = await getImport("./config/secret.js");
+})());
+
+setupPromises.push((async () => {
     // read all files from ./commands/...
-    const commandPath = resolvePath("./commands/");
-    FileSystem.readdir(commandPath, { recursive: true })
+    const directory = resolvePath("./commands/");
+    FileSystem.readdir(directory, { recursive: true })
     // only get files named 'command.js'
     .then(files => files.filter(file => file.match(/command\.js$/))
-        .forEach(file => getImport(commandPath, file).then((
+        .forEach(file => getImport(directory, file).then((
             // T = type of values from Client.commands's collections
             command: Client["commands"] extends
                 Discord.Collection<string, infer T> ? T : never
@@ -56,7 +60,8 @@ client.aliases = <Client["aliases"]> {
                 // set command entry
                 client.commands.set(name = command.config.name, command);
 
-                client.aliases.interaction.component.set(command.config.componentAlias, name);
+                client.aliases.interaction.component
+                    .set(command.config.componentAlias, name);
 
                 Object.entries(command.interaction[
                     t = Discord.InteractionType.ApplicationCommand
@@ -66,4 +71,20 @@ client.aliases = <Client["aliases"]> {
             }
         }))
     );
-})();
+})());
+
+setupPromises.push((async () => {
+    // read all files from ./events/...
+    const directory = resolvePath("./events/");
+    FileSystem.readdir(directory, { recursive: true })
+    // only get files ending in '.js'
+    .then(files => files.filter(file => file.match(/\.js$/))
+        .forEach(file => getImport(directory, file).then(event =>
+            client[event.once ? "once" : "on"](event.name, event.execute)
+        ))
+    );
+})());
+
+Promise.all(setupPromises).then(() =>
+    client.login(client.secret.bot.token)
+);
